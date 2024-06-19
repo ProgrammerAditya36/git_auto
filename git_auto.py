@@ -33,10 +33,8 @@ def main():
         cc = False
         with open(f"{path}/.git/my-git.json", "r") as file:
             data = json.loads(file.read())
-            print(data)
             cc = data["online_repo"]
         message = args[1] if len(args) > 1 else "Auto commit"
-        print(cc)
         os.system("git add .")
         os.system(f'git commit -m "{message}"')
         if(cc):
