@@ -40,7 +40,10 @@ def main():
         os.system("git add .")
         os.system(f'git commit -m "{message}"')
         if(cc):
-            os.system("git push -u origin main")
+            try:
+                os.system("git push -u origin main")
+            except:
+                print("Error in pushing online repo")
 
 
     
