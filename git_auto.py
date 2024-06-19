@@ -6,7 +6,6 @@ path  = os.getcwd()
 
 def main():    
     args = sys.argv[1:]
-    print(args)
     if len(args) == 0:
         print("Use to automate git initialzation and pushing")
         return
