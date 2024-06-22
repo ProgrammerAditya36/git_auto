@@ -41,6 +41,18 @@ def main():
         os.system("git pull origin main")
     elif command == "log":
         os.system("git log")
+    elif command == "clone":
+        repo = args[1] if len(args) > 1 else None
+        if repo:
+            os.system(f"git clone {repo}")
+        else:
+            print("No repository found")
+    elif command == "config":
+        with open("config.json", "r") as f:
+            data = json.load(f)
+            print(data)
+
+
 
 
     
