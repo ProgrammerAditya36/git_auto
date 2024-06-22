@@ -47,10 +47,6 @@ def main():
             os.system(f"git clone {repo}")
         else:
             print("No repository found")
-    elif command == "config":
-        with open("config.json", "r") as f:
-            data = json.load(f)
-            print(data)
 
 
 
