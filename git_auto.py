@@ -1,6 +1,28 @@
 #!/usr/bin/env python3
 import sys
 import os
+import requests
+from requests.auth import HTTPBasicAuth
+
+
+
+def check_repo_exists(username, repo_name, token):
+    url = f"https://api.github.com/repos/{username}/{repo_name}"
+    response = requests.get(url, auth=HTTPBasicAuth(username, token))
+    return response.status_code == 200
+
+def create_repo(username, repo_name, token):
+    url = "https://api.github.com/user/repos"
+    data = {
+        "name": repo_name,
+        "private": False,
+        "auto_init": False
+    }
+    headers = {
+        "Accept": "application/vnd.github.v3+json"
+    }
+    response = requests.post(url, auth=HTTPBasicAuth(username, token), headers=headers, json=data)
+    return response.status_code == 201
 
 def main():
     args = sys.argv[1:]
@@ -22,20 +44,27 @@ def main():
     command = args[0]
 
     if command == "init":
+        online_repo = args[1] if len(args) > 1 else "MyRepo"
+        username = os.getenv("USERNAME")
+        repo_name = online_repo
+        token = os.getenv("GITHUB_TOKEN")
+        if check_repo_exists(username, repo_name, token) == False:
+            print("Creating a new repository...")
+            if create_repo(username, repo_name, token) == False:
+                print("Error in creating repository")
+                return
+            print("Repository created successfully")
         os.system("git init")
         os.system("touch .gitignore")
-        online_repo = args[1] if len(args) > 1 else None
+        with open(".gitignore", "w") as f:
+            f.write(".vscode\n__pycache__\n*.pyc\n*.pyo\n*.pyd\nnode_modules\n")
         if online_repo:
-            os.system(f"git remote add origin {online_repo}")
+            os.system(f"git remote add origin https://github.com/{username}/{online_repo}.git")
+            print(f"Remote repository '{online_repo}' added")
+            
+        os.system("ga save Initialize")        
         print("Git initialized")
 
-    elif command == "init-online":
-        folder_name = os.path.basename(os.getcwd())
-        os.system("git init")
-        os.system("touch .gitignore")
-        os.system(f"gh repo create {folder_name} --public --confirm")
-        os.system(f"git remote add origin https://github.com/ProgrammerAditya36/{folder_name}.git")
-        print(f"GitHub repository '{folder_name}' created and added as remote")
 
     elif command == "save":
         message = args[1] if len(args) > 1 else "Auto commit"
